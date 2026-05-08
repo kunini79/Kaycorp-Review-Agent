@@ -9,7 +9,8 @@
 - [x] Add Task B metrics: Hit Rate@10 and NDCG@10.
 - [x] Expand solution paper to 4-8 pages.
 - [ ] Verify Docker build and app startup. Blocked locally: Docker is not installed on this machine.
-- [ ] Commit code and prepare GitHub remote.
+- [x] Commit code locally.
+- [ ] Prepare GitHub remote and push.
 
 ## Important
 
