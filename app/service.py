@@ -25,22 +25,61 @@ os.environ.setdefault("TQDM_DISABLE", "1")
 os.environ.setdefault("TRANSFORMERS_NO_ADVISORY_WARNINGS", "1")
 
 
+def _processed_path(filename):
+    # Allow deployment environments to override the processed-data location.
+    env_dir = os.getenv("BCT_PROCESSED_DIR")
+    if env_dir:
+        return Path(env_dir) / filename
+    return PROCESSED_DIR / filename
+
+
+def _ensure_processed_file(path):
+    if path.exists():
+        return
+
+    # Attempt to bootstrap processed CSVs from raw review files when available.
+    from app.ensure_data import ensure_data
+
+    try:
+        ensure_data()
+    except Exception as exc:
+        raise FileNotFoundError(
+            "Processed data is missing and auto-build failed. "
+            f"Expected file: {path}. "
+            "Set BCT_PROCESSED_DIR to the folder containing item_profiles.csv, "
+            "user_profiles.csv, and user_likes.csv, or add raw review files under data/raw "
+            "and run `python -m app.ensure_data`."
+        ) from exc
+
+    if not path.exists():
+        raise FileNotFoundError(
+            "Processed data build completed but required file is still missing. "
+            f"Expected file: {path}."
+        )
+
+
 @lru_cache(maxsize=1)
 def load_item_profiles():
-    return pd.read_csv(ITEM_PROFILES_PATH)
+    path = _processed_path("item_profiles.csv")
+    _ensure_processed_file(path)
+    return pd.read_csv(path)
 
 
 @lru_cache(maxsize=1)
 def load_user_profiles():
-    return pd.read_csv(USER_PROFILES_PATH)
+    path = _processed_path("user_profiles.csv")
+    _ensure_processed_file(path)
+    return pd.read_csv(path)
 
 
 @lru_cache(maxsize=1)
 def load_user_likes():
-    if not USER_LIKES_PATH.exists():
+    path = _processed_path("user_likes.csv")
+
+    if not path.exists():
         return pd.DataFrame(columns=["user_id", "liked_product_ids"])
 
-    user_likes = pd.read_csv(USER_LIKES_PATH)
+    user_likes = pd.read_csv(path)
     if "liked_product_ids" in user_likes.columns:
         user_likes["liked_product_ids"] = user_likes["liked_product_ids"].apply(_safe_list)
 

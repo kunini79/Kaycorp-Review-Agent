@@ -27,8 +27,17 @@ def cached_users():
     return load_user_profiles()
 
 
-items = cached_items()
-users = cached_users()
+try:
+    items = cached_items()
+    users = cached_users()
+except FileNotFoundError as exc:
+    st.error(
+        "Processed data files are missing. "
+        "Set BCT_PROCESSED_DIR to your processed-data folder, or add review files under data/raw "
+        "and run `python -m app.ensure_data`."
+    )
+    st.exception(exc)
+    st.stop()
 
 items["display_name"] = items.apply(
     lambda row: f"{row.get('product_name', row['product_id'])} ({row['product_id']})",
