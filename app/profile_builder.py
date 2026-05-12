@@ -1,4 +1,7 @@
 from pathlib import Path
+import hashlib
+import math
+import re
 
 import pandas as pd
 
@@ -131,13 +134,30 @@ def build_user_likes(df, minimum_rating=4):
 
 
 def add_item_embeddings(item_profiles, model_name="all-MiniLM-L6-v2"):
-    from sentence_transformers import SentenceTransformer
-
-    model = SentenceTransformer(model_name)
     item_profiles = item_profiles.copy()
-    item_profiles["embedding"] = item_profiles["sample_reviews"].apply(
-        lambda x: model.encode(str(x)).tolist()
-    )
+
+    try:
+        from sentence_transformers import SentenceTransformer
+
+        model = SentenceTransformer(model_name)
+        item_profiles["embedding"] = item_profiles["sample_reviews"].apply(
+            lambda x: model.encode(str(x)).tolist()
+        )
+    except ModuleNotFoundError:
+        def hashed_embedding(text, dimensions=384):
+            vector = [0.0] * dimensions
+            tokens = re.findall(r"[a-z0-9]+", str(text).lower())
+            for token in tokens:
+                digest = hashlib.md5(token.encode("utf-8")).hexdigest()
+                index = int(digest[:8], 16) % dimensions
+                vector[index] += 1.0
+
+            norm = math.sqrt(sum(value * value for value in vector))
+            if norm:
+                vector = [value / norm for value in vector]
+            return vector
+
+        item_profiles["embedding"] = item_profiles["sample_reviews"].apply(hashed_embedding)
 
     return item_profiles
 

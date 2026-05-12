@@ -6,6 +6,5 @@ venv/
 .pytest_cache/
 .streamlit/secrets.toml
 data/raw/
-data/processed/*.csv
 outputs/
 notebooks/.ipynb_checkpoints/

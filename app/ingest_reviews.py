@@ -15,8 +15,8 @@ OUTPUT_PATH = PROCESSED_DIR / "clean_reviews.csv"
 def review_files():
     return sorted(
         path
-        for path in RAW_DIR.glob("*Reviews*gz")
-        if path.name.lower().startswith(("cell_", "health_", "software_"))
+        for path in RAW_DIR.glob("*.jsonl.gz")
+        if not path.name.lower().startswith("meta_")
     )
 
 
