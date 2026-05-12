@@ -1,8 +1,8 @@
-# BCT Review Intelligence Agent Solution Paper
+# Kaycorp Intelligent Review Agent Solution Paper
 
 ## 1. Executive Summary
 
-This project builds an LLM-style user modeling and recommendation agent for the DSN x BCT LLM Agent Challenge. The system uses real Amazon review data from three domains: Cell Phones and Accessories, Health and Household, and Software. From this review history, it creates user memory, item memory, semantic item embeddings, review generation workflows, and personalized recommendation endpoints.
+This project builds a review intelligence system for customer modeling, recommendations, and review generation. The system uses real Amazon review data from three domains: All Beauty, Appliances, and Gift Cards. From this review history, it creates user memory, item memory, item embeddings, review generation workflows, and personalized recommendation endpoints.
 
 The goal is to model people as behavioral agents rather than static IDs. Each user profile captures rating tendency, review count, review length, and sample writing behavior. Each item profile captures average rating, review count, review memory, product name, category, store, price, features, and metadata when available. The API then exposes two challenge-facing workflows:
 
@@ -15,18 +15,18 @@ The current implementation is intentionally reproducible and modular. It uses `s
 
 The system uses real Amazon review-level files:
 
-- `Cell_Phones_and_Accessories_Reviews.jsonl.gz`
-- `Health_and_Household_Reviews.jsonl.gz`
-- `Software_Reviews_jsonl.gz`
+- `All_Beauty.jsonl.gz`
+- `Appliances.jsonl.gz`
+- `Gift_Cards.jsonl.gz`
 
 Each review file contains `user_id`, `asin`, `parent_asin`, `rating`, `title`, `text`, `timestamp`, `helpful_vote`, and `verified_purchase`. Product metadata files are used to enrich product IDs with readable titles, categories, brands or stores, descriptions, features, prices, and images.
 
 The processed build currently contains:
 
-- 28,560 real review interactions
+- 6,960 real review interactions
 - 750 real users
-- 22,287 products
-- 749 users with like memory
+- 4,455 products
+- 747 users with like memory
 - 100% item embedding coverage
 - 100% persona coverage
 
@@ -46,7 +46,7 @@ This gives the agent two complementary memory stores: user memory and item memor
 
 ## 4. User Modeling Approach
 
-For Task A, the agent needs to understand a user's tone, rating behavior, and contextual nuance. The user profile builder converts numeric behavior into an AI-readable persona. For example, a user with high average rating is described as generally positive, while a user with lower average rating is described as more critical. Review length is used as a proxy for verbosity.
+For Task A, the agent needs to understand a user's tone, rating behavior, and contextual nuance. The user profile builder converts numeric behavior into a plain-language customer profile. For example, a user with high average rating is described as generally positive, while a user with lower average rating is described as more critical. Review length is used as a proxy for verbosity.
 
 The profile includes:
 

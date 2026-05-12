@@ -1,13 +1,13 @@
-# BCT Review Intelligence Agent
+# Kaycorp Intelligent Review Agent
 
-An AI product-review system that builds user memory, item memory, semantic product recommendations, and Nigerian-contextualized review generation.
+A product-review system that builds user memory, item memory, product recommendations, and Nigerian-contextualized review generation.
 
 ## What It Does
 
 - Builds item profiles with average rating, review count, sample review memory, and embeddings.
-- Builds synthetic shopper personas with positivity, activity level, verbosity, and sample behavior when raw reviewer IDs are unavailable.
+- Builds customer profiles with positivity, activity level, verbosity, and sample behavior when raw reviewer IDs are unavailable.
 - Recommends semantically similar products using sentence-transformer embeddings and cosine similarity.
-- Generates persona-aware product reviews with restrained Nigerian English style.
+- Generates profile-aware product reviews with restrained Nigerian English style.
 - Exposes the system through FastAPI and Streamlit.
 
 ## Project Structure
@@ -35,7 +35,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-`python main.py` ingests real review-level files from `data/raw/*Reviews*.jsonl.gz`, builds `clean_reviews.csv`, then creates user/item profiles and embeddings.
+`python main.py` ingests real review-level files from `data/raw/*.jsonl.gz`, builds `clean_reviews.csv`, then creates user/item profiles and embeddings.
 
 ## Run The API
 
@@ -69,7 +69,7 @@ Example review request:
 }
 ```
 
-Challenge Task A request:
+Review generation request:
 
 ```json
 {
@@ -83,7 +83,7 @@ Challenge Task A request:
 }
 ```
 
-Challenge Task B request:
+Recommendation request:
 
 ```json
 {
@@ -111,7 +111,7 @@ Run API and frontend together:
 docker compose up --build
 ```
 
-The compose file mounts both `data/raw` and `data/processed`. If processed CSVs are missing, the container runs `python -m app.ensure_data` and rebuilds them from `data/raw/*Reviews*.gz`.
+The compose file mounts both `data/raw` and `data/processed`. If processed CSVs are missing, the container runs `python -m app.ensure_data` and rebuilds them from `data/raw/*.jsonl.gz`.
 
 Open:
 
@@ -128,19 +128,19 @@ This writes `outputs/evaluation_metrics.json` with profile coverage, recommendat
 
 Current evaluator includes:
 
-- Task A rating RMSE
-- Task A ROUGE-L review text score
-- Task B Hit Rate@10
-- Task B NDCG@10
+- Review rating RMSE
+- ROUGE-L review text score
+- Recommendation Hit Rate@10
+- Recommendation NDCG@10
 - memory and embedding coverage
 
 ## Dataset
 
 The project now uses real Amazon review-level files when present:
 
-- `Cell_Phones_and_Accessories_Reviews.jsonl.gz`
-- `Health_and_Household_Reviews.jsonl.gz`
-- `Software_Reviews_jsonl.gz`
+- `All_Beauty.jsonl.gz`
+- `Appliances.jsonl.gz`
+- `Gift_Cards.jsonl.gz`
 
 Metadata files are used to enrich product IDs with readable names, categories, stores, prices, features, descriptions, and images where available.
 

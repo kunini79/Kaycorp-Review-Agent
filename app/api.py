@@ -17,8 +17,8 @@ from app.service import (
 
 
 app = FastAPI(
-    title="BCT Review Intelligence Agent",
-    description="Product memory, user personas, semantic recommendations, and review generation.",
+    title="Kaycorp Intelligent Review Agent",
+    description="Customer profiles, product recommendations, and review generation.",
     version="1.0.0",
 )
 
@@ -66,7 +66,7 @@ class TaskBRequest(BaseModel):
 @app.get("/")
 def root():
     return {
-        "name": "BCT Review Intelligence Agent",
+        "name": "Kaycorp Intelligent Review Agent",
         "docs": "/docs",
         "health": "/health",
     }

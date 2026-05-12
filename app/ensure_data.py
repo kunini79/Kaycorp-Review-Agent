@@ -26,7 +26,7 @@ def ensure_data():
     if not review_files():
         raise FileNotFoundError(
             "Processed data is missing and no review files were found. "
-            "Place Amazon review files in data/raw/*Reviews*.gz, then run python main.py."
+            "Place Amazon review files in data/raw/*.jsonl.gz, then run python main.py."
         )
 
     print("Processed data missing. Building from review files...")

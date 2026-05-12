@@ -27,7 +27,7 @@ os.environ.setdefault("TRANSFORMERS_NO_ADVISORY_WARNINGS", "1")
 
 def _processed_path(filename):
     # Allow deployment environments to override the processed-data location.
-    env_dir = os.getenv("BCT_PROCESSED_DIR")
+    env_dir = os.getenv("KAYCORP_PROCESSED_DIR")
     if env_dir:
         return Path(env_dir) / filename
     return PROCESSED_DIR / filename
@@ -46,7 +46,7 @@ def _ensure_processed_file(path):
         raise FileNotFoundError(
             "Processed data is missing and auto-build failed. "
             f"Expected file: {path}. "
-            "Set BCT_PROCESSED_DIR to the folder containing item_profiles.csv, "
+            "Set KAYCORP_PROCESSED_DIR to the folder containing item_profiles.csv, "
             "user_profiles.csv, and user_likes.csv, or add raw review files under data/raw "
             "and run `python -m app.ensure_data`."
         ) from exc
