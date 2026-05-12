@@ -93,17 +93,26 @@ with tab_recs:
             "Find recommendations by",
             ["Similar products", "Customer history"],
             horizontal=True,
+            key="recommendation_mode",
         )
-        top_k = st.slider("Results", min_value=3, max_value=20, value=5)
+        top_k = st.slider("Results", min_value=3, max_value=20, value=5, key="top_k")
 
         if mode == "Similar products":
-            selected_product = st.selectbox("Product", items["display_name"].tolist())
+            selected_product = st.selectbox(
+                "Product",
+                items["display_name"].tolist(),
+                key="recommendation_product",
+            )
             product_id = items.loc[
                 items["display_name"] == selected_product, "product_id"
             ].iloc[0]
             recommendations = get_similar_products(product_id, top_k=top_k)
         else:
-            selected_user = st.selectbox("Customer profile", users["display_name"].tolist())
+            selected_user = st.selectbox(
+                "Customer profile",
+                users["display_name"].tolist(),
+                key="recommendation_customer",
+            )
             user_id = users.loc[users["display_name"] == selected_user, "user_id"].iloc[0]
             recommendations = get_user_recommendations(user_id, top_k=top_k)
 
@@ -118,25 +127,39 @@ with tab_reviews:
     left, right = st.columns([1, 2])
 
     with left:
-        selected_review_user = st.selectbox("Customer profile", users["display_name"].tolist())
+        selected_review_user = st.selectbox(
+            "Customer profile",
+            users["display_name"].tolist(),
+            key="review_customer",
+        )
         selected_user_row = users.loc[users["display_name"] == selected_review_user].iloc[0]
         review_user_id = selected_user_row["user_id"]
         review_persona = selected_user_row["persona"]
         selected_product_id = st.selectbox(
             "Product",
             ["Manual product"] + items["display_name"].tolist(),
+            key="review_product",
         )
 
         product_details = {}
 
         if selected_product_id == "Manual product":
             product_details = {
-                "product_name": st.text_input("Product name", "Budget wireless earbuds"),
-                "category": st.text_input("Category", "Cell Phones & Accessories"),
+                "product_name": st.text_input(
+                    "Product name",
+                    "Budget wireless earbuds",
+                    key="manual_product_name",
+                ),
+                "category": st.text_input(
+                    "Category",
+                    "Cell Phones & Accessories",
+                    key="manual_product_category",
+                ),
                 "features": st.text_area(
                     "Product details",
                     "Affordable wireless earbuds with compact charging case.",
                     height=90,
+                    key="manual_product_details",
                 ),
             }
         else:
@@ -150,7 +173,7 @@ with tab_reviews:
                 "description": product_row.get("description"),
             }
 
-        generate = st.button("Generate review", type="primary")
+        generate = st.button("Generate review", type="primary", key="generate_review")
 
     with right:
         st.subheader("Output")
@@ -170,7 +193,7 @@ with tab_reviews:
                     "Confidence",
                     f"{result['nearest_user_similarity']:.2f}",
                 )
-                st.text_area("Review", result["review"], height=260)
+                st.text_area("Review", result["review"], height=260, key="generated_review")
             else:
                 st.error("Could not generate review for this user.")
         else:
