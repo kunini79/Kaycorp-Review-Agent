@@ -52,6 +52,54 @@ def cached_users():
     return load_user_profiles()
 
 
+def format_rating(value):
+    try:
+        rating = float(value)
+    except (TypeError, ValueError):
+        return "No rating"
+
+    filled = int(round(rating))
+    stars = "★" * filled + "☆" * (5 - filled)
+    return f"{stars} {rating:.1f}"
+
+
+def recommendation_view(records):
+    view = pd.DataFrame(records)
+    if view.empty:
+        return view
+
+    if "avg_rating" in view.columns:
+        view.insert(0, "Rating", view["avg_rating"].apply(format_rating))
+
+    rename_map = {
+        "product_name": "Product",
+        "product_id": "Product ID",
+        "category": "Category",
+        "store": "Store",
+        "price": "Price",
+        "avg_rating": "Average Rating",
+        "review_count": "Reviews",
+        "similarity": "Match",
+    }
+    view = view.rename(columns={key: value for key, value in rename_map.items() if key in view})
+
+    preferred_columns = [
+        "Rating",
+        "Product",
+        "Category",
+        "Average Rating",
+        "Reviews",
+        "Match",
+        "Product ID",
+        "Store",
+        "Price",
+    ]
+    ordered_columns = [column for column in preferred_columns if column in view.columns]
+    ordered_columns.extend(column for column in view.columns if column not in ordered_columns)
+
+    return view[ordered_columns]
+
+
 try:
     items = cached_items()
     users = cached_users()
@@ -119,7 +167,7 @@ with tab_recs:
     with right:
         st.subheader("Recommendations")
         if recommendations:
-            st.dataframe(pd.DataFrame(recommendations), width="stretch")
+            st.dataframe(recommendation_view(recommendations), width="stretch")
         else:
             st.info("No recommendations found for this selection.")
 
@@ -186,7 +234,7 @@ with tab_reviews:
                 rating_cols = st.columns(3)
                 rating_cols[0].metric(
                     "Predicted Rating",
-                    f"{result['predicted_rating']:.1f} / 5",
+                    format_rating(result["predicted_rating"]),
                 )
                 rating_cols[1].metric("Matched Profile", review_user_id[:10])
                 rating_cols[2].metric(
